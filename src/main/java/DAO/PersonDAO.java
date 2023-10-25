@@ -3,6 +3,8 @@ package DAO;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -10,6 +12,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import config.MongoDBConnection;
 import java.io.IOException;
+import com.mongodb.client.model.Filters;
 import java.util.ArrayList;
 import model.Person;
 import java.util.List;
@@ -68,14 +71,17 @@ public class PersonDAO {
 
     public Person readDocument(String id) {
         MongoCollection<Document> collection = dbConnection.getCollection("demo1");
-        Document document = collection.find(new Document("_id", id)).first();
-
+        System.out.println("id: "+id);
+        Document document = collection.find(Filters.eq("_id", id)).first();
+        
         if (document != null) {
             try {
                 return objectMapper.readValue(document.toJson(), Person.class);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }else{
+            System.out.println("docuemtno no encontrado....");
         }
 
         return null;

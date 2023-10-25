@@ -64,6 +64,7 @@
                                 <th scope="col">Email</th>
                                 <th scope="col">Telefono</th>
                                 <th scope="col">Edad</th>
+                                <th scope="col"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -76,8 +77,13 @@
                                     <td><c:out value="${user.email}"/></td>
                                     <td><c:out value="${user.phone}"/></td>
                                     <td><c:out value="${user.age}"/></td>
-
-
+                                    <td class="d-flex">
+                                        <a href="/users?action=edit&id=<c:out value="${user.id}"/>" class="btn btn-primary">editar</a>
+                                        <form action="/users" method="POST">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn btn-danger">eliminar</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </tbody>

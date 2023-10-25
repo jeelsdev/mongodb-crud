@@ -41,18 +41,23 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         String action;
         RequestDispatcher dispatcher = null;
+        PersonDAO personDAO = new PersonDAO();
         
         action = request.getParameter("action");
+        if("edit".equals(action)){
+            String id = request.getParameter("id");
+            Person user = personDAO.readDocument(id);
+            System.out.println(user);
+            request.setAttribute("user", user);
+            request.getRequestDispatcher("edit.jsp").forward(request, response);
+        }else if("update".equals(action)){
+            doPut(request, response);
+        }else if("delete".equals(action)){
+            doDelete(request, response);
+        }
         
-        System.out.println("usersssssssssssssssssss");
-        
-        
-        PersonDAO personDAO = new PersonDAO();
         List<Person> usuarios = personDAO.getAllUsuarios();
 
-        // Puedes usar Jackson para convertir la lista de usuarios a JSON si es necesario
-
-        // Luego, enviar la lista de usuarios a la vista JSP
         request.setAttribute("usuarios", usuarios);
         request.getRequestDispatcher("users.jsp").forward(request, response);
         
@@ -112,6 +117,48 @@ public class UserController extends HttpServlet {
         // Luego, enviar la lista de usuarios a la vista JSP
         request.setAttribute("usuarios", usuarios);
         request.getRequestDispatcher("users.jsp").forward(request, response);
+    }
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String id = request.getParameter("id");
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String lastname = request.getParameter("lastname");
+        int age = Integer.parseInt(request.getParameter("age"));
+        int phone =Integer.parseInt(request.getParameter("phone"));
+       
+        Person person = new Person(name, lastname, age, email, phone);
+        
+        try {
+            PersonDAO personDAO = new PersonDAO();
+            personDAO.updateDocument(id, person);
+            
+            List<Person> usuarios = personDAO.getAllUsuarios();
+
+           
+            request.setAttribute("usuarios", usuarios);
+            request.getRequestDispatcher("users.jsp").forward(request, response);
+        
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+    }
+
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try{
+            PersonDAO personDAO = new PersonDAO();
+            String id = request.getParameter("id");
+            personDAO.deleteDocument(id);
+            
+            List<Person> usuarios = personDAO.getAllUsuarios();
+
+           
+            request.setAttribute("usuarios", usuarios);
+            request.getRequestDispatcher("users.jsp").forward(request, response);
+        }catch(Exception e){
+             e.printStackTrace();
+        }
+        
     }
     /**
      * Returns a short description of the servlet.
